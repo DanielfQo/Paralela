@@ -39,6 +39,8 @@ int main(int argc, char** argv) {
     MPI_Comm_rank(MPI_COMM_WORLD, &rank);
     MPI_Comm_size(MPI_COMM_WORLD, &comm_sz);
 
+    double start_time = MPI_Wtime();
+
     MPI_Bcast(&n, 1, MPI_INT, 0, MPI_COMM_WORLD);
 
     int local_n = n / comm_sz;
@@ -97,10 +99,13 @@ int main(int argc, char** argv) {
         step *= 2;
     }
 
+    double end_time = MPI_Wtime();
+
     if (rank == 0) {
         printf("\nLista global ordenada:\n");
         for (int i = 0; i < local_n; i++) printf("%d ", local_data[i]);
         printf("\n");
+        printf("Tiempo total (MPI_Wtime): %f segundos\n", end_time - start_time);
     }
 
     free(local_data);

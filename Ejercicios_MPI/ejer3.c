@@ -8,10 +8,13 @@ Luego, una vez que tengas esta versión funcionando, modifica tu programa para q
 int main() {
     int comm_sz, my_rank, local_value, received_value, step;
     int global_sum = 0;
+    double start_time, end_time;
 
     MPI_Init(NULL, NULL);
     MPI_Comm_size(MPI_COMM_WORLD, &comm_sz);
     MPI_Comm_rank(MPI_COMM_WORLD, &my_rank);
+
+    start_time = MPI_Wtime();
 
     local_value = my_rank;
 
@@ -37,9 +40,12 @@ int main() {
         }
     }
 
+    end_time = MPI_Wtime();
+
     if (my_rank == 0) {
         global_sum = local_value;
         printf("Suma Global: %d\n", global_sum);
+        printf("Tiempo de ejecución: %f segundos\n", end_time - start_time);
     }
 
     MPI_Finalize();

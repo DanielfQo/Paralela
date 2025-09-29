@@ -9,12 +9,16 @@ int main(int argc, char* argv[]) {
     int comm_sz, my_rank;
     int local_value, received_value;
     int mask, partner, global_sum = 0;
+    double start_time, end_time;
 
     MPI_Init(&argc, &argv);
     MPI_Comm_size(MPI_COMM_WORLD, &comm_sz);
     MPI_Comm_rank(MPI_COMM_WORLD, &my_rank);
 
     local_value = my_rank;
+
+    // Start timing
+    start_time = MPI_Wtime();
 
     for (mask = 1; mask < comm_sz; mask <<= 1) {
         partner = my_rank ^ mask;
@@ -32,9 +36,13 @@ int main(int argc, char* argv[]) {
         }
     }
 
+    // End timing
+    end_time = MPI_Wtime();
+
     if (my_rank == 0) {
         global_sum = local_value;
         printf("Suma global: %d\n", global_sum);
+        printf("Tiempo de ejecución (MPI_Wtime): %f segundos\n", end_time - start_time);
     }
 
     MPI_Finalize();

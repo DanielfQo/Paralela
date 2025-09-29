@@ -29,9 +29,9 @@ int main() {
     MPI_Comm_rank(MPI_COMM_WORLD, &rank);
     MPI_Comm_size(MPI_COMM_WORLD, &size);
 
+    double start_time = MPI_Wtime();
 
     MPI_Bcast(data, data_count, MPI_FLOAT, 0, MPI_COMM_WORLD);
-
 
     int local_n = data_count / size;
     int start = rank * local_n;
@@ -54,10 +54,13 @@ int main() {
 
     MPI_Reduce(local_bin_counts, bin_counts, bin_count, MPI_INT, MPI_SUM, 0, MPI_COMM_WORLD);
 
+    double end_time = MPI_Wtime();
+
     if (rank == 0) {
         for (int b = 0; b < bin_count; b++) {
             printf("Bin %d: %d\n", b, bin_counts[b]);
         }
+        printf("Tiempo de ejecucion: %f segundos\n", end_time - start_time);
         free(bin_counts);
     }
 

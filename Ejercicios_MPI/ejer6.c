@@ -12,7 +12,7 @@ int main(int argc, char* argv[]) {
     int n = 4;  
     int *Matriz, *Vector, *Result;
     int *local_Matriz, *local_Vector, *local_Result;
-    
+    double start, end;
 
     MPI_Init(&argc, &argv);
     MPI_Comm_size(MPI_COMM_WORLD, &comm_sz);
@@ -38,22 +38,21 @@ int main(int argc, char* argv[]) {
     if (my_rank == 0) {
         for (int i = 0; i < n; i++) {
             Vector[i] = i + 1;
-
             for (int j = 0; j < n; j++) {
                 Matriz[i*n + j] = i + j + 1;
-
             }
         }
     }
 
-    MPI_Scatter(Matriz, local_n * n, MPI_INT, local_Matriz, local_n * n, MPI_INT, 0, MPI_COMM_WORLD);
+    MPI_Barrier(MPI_COMM_WORLD);
+    start = MPI_Wtime();
 
+    MPI_Scatter(Matriz, local_n * n, MPI_INT, local_Matriz, local_n * n, MPI_INT, 0, MPI_COMM_WORLD);
     MPI_Bcast(Vector, n, MPI_INT, 0, MPI_COMM_WORLD);
 
     for (int i = 0; i < local_n; i++) {
         for (int j = 0; j < n; j++) {
             local_Result[i] += local_Matriz[i*n + j] * Vector[j];
-
         }
     }
 
@@ -65,12 +64,13 @@ int main(int argc, char* argv[]) {
             MPI_Recv(Result + src*local_n, local_n, MPI_INT, src, 0, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
         }
 
-        printf("Resultado y = [ ");
+        end = MPI_Wtime();
 
+        printf("Resultado y = [ ");
         for (int i = 0; i < n; i++) 
             printf("%d ", Result[i]);
-
         printf("]\n");
+        printf("Tiempo de ejecucion: %f segundos\n", end - start);
     } else {
         MPI_Send(local_Result, local_n, MPI_INT, 0, 0, MPI_COMM_WORLD);
     }
@@ -80,7 +80,6 @@ int main(int argc, char* argv[]) {
     free(Result);
     free(local_Matriz); 
     free(local_Vector); 
-
     free(local_Result);
 
     MPI_Finalize();

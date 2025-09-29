@@ -13,7 +13,7 @@ int main() {
     int rank, size;
     int msj = 123;
 
-    int max_reps = 10000000;
+    int max_reps = 1000000;
 
     MPI_Init(NULL, NULL);
     MPI_Comm_rank(MPI_COMM_WORLD, &rank);

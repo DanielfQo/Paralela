@@ -16,6 +16,7 @@ int main() {
     long long int local_in_circle = 0 , global_in_circle = 0;
 
     double x, y;
+    double start_time, end_time;
 
     MPI_Init(NULL, NULL);
     MPI_Comm_rank(MPI_COMM_WORLD, &rank);
@@ -26,6 +27,8 @@ int main() {
     local_lanzamientos = total_lanzamientos / size;
 
     srand(time(NULL) ^ (rank * 1234567));
+
+    start_time = MPI_Wtime();
 
     for (long long int toss = 0; toss < local_lanzamientos; toss++) {
         x = (double) rand() / RAND_MAX * 2.0 - 1.0;
@@ -38,9 +41,12 @@ int main() {
 
     MPI_Reduce(&local_in_circle, &global_in_circle, 1, MPI_LONG_LONG_INT, MPI_SUM, 0, MPI_COMM_WORLD);
 
+    end_time = MPI_Wtime();
+
     if (rank == 0) {
         double pi_estimate = 4.0 * ((double) global_in_circle / (double) total_lanzamientos);
         printf("Estimacion de pi = %f\n", pi_estimate);
+        printf("Tiempo de ejecucion: %f segundos\n", end_time - start_time);
     }
 
     MPI_Finalize();
