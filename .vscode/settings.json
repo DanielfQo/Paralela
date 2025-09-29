@@ -1,5 +1,8 @@
 {
     "files.associations": {
-        "iostream": "cpp"
+        "iostream": "cpp",
+        "stdlib.h": "c",
+        "mpi.h": "c",
+        "system_error": "c"
     }
 }
